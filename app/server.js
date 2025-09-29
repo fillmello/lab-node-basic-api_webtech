@@ -11,8 +11,12 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/app', express.static (path.join (__dirname, 'public')))
 
-let port = process.env.PORT || 3000
-app.listen (port)
-
+// Mover rotas antes de iniciar o servidor
 const apiRouter = require('./api/routes/apiRouter.js')
-app.use ('/api', apiRouter)
+app.use('/api', apiRouter)
+
+// Iniciar servidor após montar middlewares/rotas
+let port = process.env.PORT || 3000
+app.listen(port, () => {
+  console.log(`API listening on http://localhost:${port}`)
+})
