@@ -9,10 +9,10 @@ app.use(cors())
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/app', express.static (path.join (__dirname, '/public')))
+app.use('/app', express.static (path.join (__dirname, 'public')))
 
 let port = process.env.PORT || 3000
 app.listen (port)
 
-const apiRouter = require('../api/routes/apiRouter.js')
+const apiRouter = require('./api/routes/apiRouter.js')
 app.use ('/api', apiRouter)
