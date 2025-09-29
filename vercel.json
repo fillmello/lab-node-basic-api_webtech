@@ -3,13 +3,13 @@
   "functions": {
     "api/index.js": {
       "runtime": "nodejs20.x",
-      "includeFiles": [
-        "app/public/**",
-        "app/api/**"
-      ]
+      "includeFiles": "app/**"
     }
   },
   "rewrites": [
+    { "source": "/(.*)", "destination": "/api/index.js" }
+  ]
+}
     { "source": "/(.*)", "destination": "/api/index.js" }
   ]
 }
