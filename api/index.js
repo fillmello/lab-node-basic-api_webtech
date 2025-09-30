@@ -11,7 +11,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use('/app', express.static(path.join(__dirname, '..', 'app', 'public')))
 
 // usa as rotas existentes do projeto
-const apiRouter = require('../app/api/routes/apiRouter.js')
+const apiRouter = require('./routes/api_routes.js')
 app.use('/api', apiRouter)
 
 // handler da Serverless Function
