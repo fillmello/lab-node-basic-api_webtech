@@ -12,7 +12,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/app', express.static (path.join (__dirname, 'public')))
 
 // Mover rotas antes de iniciar o servidor
-const apiRouter = require('../api/routes/api_routes.js')
+const apiRouter = require('../api/routes/apiRouter.js')
 app.use('/api', apiRouter)
 
 // Iniciar servidor após montar middlewares/rotas
