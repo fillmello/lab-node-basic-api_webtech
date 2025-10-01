@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="pt-br" data-gh="fillmello">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Portfólio | GitHub</title>
+  <meta name="description" content="Portfólio simples carregando dados públicos do GitHub." />
+  <link rel="icon" href="https://github.githubassets.com/favicons/favicon.svg" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { DEFAULT: '#0ea5e9', dark: '#0284c7' }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-100 antialiased">
+  <header class="sticky top-0 z-10 backdrop-blur bg-slate-950/70 border-b border-slate-800">
+    <div class="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
+      <h1 class="text-lg font-semibold tracking-tight">Meu Portfólio</h1>
+      <nav class="flex items-center gap-3">
+        <a id="githubLink" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 transition"
+           href="https://github.com/" target="_blank" rel="noreferrer">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a12 12 0 0 0-3.79 23.4c.6.11.82-.26.82-.58v-2.02c-3.34.73-4.04-1.61-4.04-1.61-.55-1.41-1.35-1.79-1.35-1.79-1.1-.75.08-.73.08-.73 1.22.09 1.86 1.26 1.86 1.26 1.08 1.85 2.83 1.31 3.52 1 .11-.79.42-1.31.76-1.61-2.66-.3-5.46-1.33-5.46-5.93 0-1.31.47-2.38 1.24-3.23-.13-.3-.54-1.52.12-3.17 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.65.25 2.87.12 3.17.77.85 1.24 1.92 1.24 3.23 0 4.61-2.8 5.62-5.47 5.92.43.37.82 1.1.82 2.22v3.29c0 .32.22.7.83.58A12 12 0 0 0 12 .5Z"/></svg>
+          <span>GitHub</span>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-6xl px-4 py-10 space-y-14">
+    <section class="grid md:grid-cols-2 gap-8 items-center">
+      <div>
+        <p class="text-sm uppercase tracking-widest text-brand">Olá, eu sou</p>
+        <h2 id="name" class="mt-2 text-3xl md:text-5xl font-bold">Meu Nome</h2>
+        <p id="bio" class="mt-4 text-slate-300">Desenvolvedor(a) focado(a) em construir APIs e apps web. Abaixo você encontra meus repositórios públicos do GitHub.</p>
+        <div class="mt-6 flex gap-3">
+          <a id="primaryCta" href="https://github.com/" target="_blank" rel="noreferrer"
+             class="px-4 py-2 rounded-md bg-brand hover:bg-brand-dark transition font-medium">Ver perfil no GitHub</a>
+          <a href="#projetos" class="px-4 py-2 rounded-md border border-slate-700 hover:bg-slate-800 transition">Projetos</a>
+        </div>
+      </div>
+      <div class="relative">
+        <div class="absolute inset-0 bg-brand/20 blur-3xl rounded-full -z-10"></div>
+        <div class="rounded-xl border border-slate-800 bg-slate-900 p-6">
+          <pre class="text-xs leading-relaxed overflow-auto"><code>// API simples em Node + Express
+app.get('/api/produtos', (req, res) => {
+  res.json({ produtos: [] })
+})</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <section id="sobre" class="space-y-3">
+      <h3 class="text-xl font-semibold">Sobre</h3>
+      <p class="text-slate-300">Sou Front-end Developer, curso Engenharia de Software na PUC Minas e faço parte do projeto de extensão WebTech Network, criando interfaces web modernas com foco em acessibilidade, performance e boas práticas.</p>
+    </section>
+
+    <section id="projetos" class="space-y-5">
+      <div class="flex items-center justify-between">
+        <h3 class="text-xl font-semibold">Projetos</h3>
+        <div class="flex items-center gap-2">
+          <label for="ghUser" class="text-sm text-slate-400">Usuário GitHub:</label>
+          <input id="ghUser" class="px-3 py-1.5 rounded-md bg-slate-900 border border-slate-800 focus:outline-none focus:ring-2 focus:ring-brand text-sm"
+                 placeholder="usuario" />
+          <button id="loadBtn" class="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 text-sm">Carregar</button>
+        </div>
+      </div>
+      <div id="repos" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+      <p id="reposStatus" class="text-slate-400 text-sm"></p>
+    </section>
+
+  </main>
+
+  <footer class="border-t border-slate-800">
+    <div class="mx-auto max-w-6xl px-4 py-6 text-sm text-slate-400">
+      © <span id="year"></span> • Feito com Tailwind + GitHub API
+    </div>
+  </footer>
+
+  <script>
+    const qs = new URLSearchParams(location.search);
+    const defaultUser = document.documentElement.dataset.gh || 'fillmello';
+    const ghUser = (qs.get('user') || defaultUser).trim();
+
+    const $ = (sel) => document.querySelector(sel);
+    const nameEl = $('#name');
+    const bioEl = $('#bio');
+    const reposEl = $('#repos');
+    const reposStatusEl = $('#reposStatus');
+    const ghInput = $('#ghUser');
+    const loadBtn = $('#loadBtn');
+    const ghLink = $('#githubLink');
+    const primaryCta = $('#primaryCta');
+
+    document.getElementById('year').textContent = new Date().getFullYear();
+    ghInput.value = ghUser;
+
+    function profileUrl(user) { return `https://github.com/${encodeURIComponent(user)}`; }
+    function apiUrl(user) { return `https://api.github.com/users/${encodeURIComponent(user)}`; }
+    function reposUrl(user) { return `https://api.github.com/users/${encodeURIComponent(user)}/repos?per_page=12&sort=updated`; }
+
+    async function loadProfile(user) {
+      try {
+        reposStatusEl.textContent = 'Carregando...';
+        const [uRes, rRes] = await Promise.all([
+          fetch(apiUrl(user)),
+          fetch(reposUrl(user))
+        ]);
+
+        if (!uRes.ok) throw new Error('Usuário não encontrado');
+        const userData = await uRes.json();
+        nameEl.textContent = userData.name || userData.login || user;
+        bioEl.textContent = userData.bio || 'Desenvolvedor(a) no GitHub.';
+        ghLink.href = profileUrl(user);
+        primaryCta.href = profileUrl(user);
+
+        if (!rRes.ok) throw new Error('Falha ao carregar repositórios');
+        const repos = await rRes.json();
+
+        reposEl.innerHTML = '';
+        if (!Array.isArray(repos) || repos.length === 0) {
+          reposEl.innerHTML = '<div class="text-slate-400 text-sm">Nenhum repositório público encontrado.</div>';
+        } else {
+          repos
+            .filter(r => !r.fork)
+            .slice(0, 12)
+            .forEach(r => {
+              const updated = new Date(r.updated_at).toLocaleDateString('pt-BR');
+              const lang = r.language || '—';
+              const stars = r.stargazers_count ?? 0;
+              const desc = r.description ? r.description.replace(/</g, '&lt;') : 'Sem descrição';
+              const card = document.createElement('a');
+              card.className = 'group rounded-lg border border-slate-800 bg-slate-900 hover:bg-slate-800 transition p-4 flex flex-col gap-2';
+              card.href = r.html_url;
+              card.target = '_blank';
+              card.rel = 'noreferrer';
+              card.innerHTML = `
+                <div class="flex items-center justify-between">
+                  <h4 class="font-medium truncate">${r.name}</h4>
+                  <span class="text-xs px-2 py-0.5 rounded bg-slate-800 border border-slate-700">${lang}</span>
+                </div>
+                <p class="text-sm text-slate-300 line-clamp-3">${desc}</p>
+                <div class="mt-auto flex items-center justify-between text-xs text-slate-400">
+                  <span>⭐ ${stars}</span>
+                  <span>Atualizado em ${updated}</span>
+                </div>
+              `;
+              reposEl.appendChild(card);
+            });
+        }
+        reposStatusEl.textContent = '';
+      } catch (e) {
+        reposEl.innerHTML = '';
+        reposStatusEl.textContent = 'Erro: ' + (e.message || 'Falha ao carregar dados');
+      }
+    }
+
+    loadBtn.addEventListener('click', () => {
+      const user = ghInput.value.trim() || defaultUser;
+      const url = new URL(location.href);
+      url.searchParams.set('user', user);
+      history.replaceState({}, '', url);
+      loadProfile(user);
+    });
+
+    // Carrega perfil inicial
+    loadProfile(ghUser);
+  </script>
+</body>
+</html>
